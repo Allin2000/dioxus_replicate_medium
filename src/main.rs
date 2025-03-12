@@ -5,7 +5,7 @@ use components::Header;
 use components::Footer;
 
 // use views::{Blog, Home};
-use views::{Home};
+use views::{Home,Login,Register,Profile,Settings,Create_edit,Article};
 
 mod components;
 mod views;
@@ -18,6 +18,18 @@ enum Route {
     // #[layout(Footer)]
         #[route("/")]
         Home {},
+        #[route("/login")]
+        Login {},
+        #[route("/register")]
+        Register {},
+        #[route("/profile")]
+        Profile {},
+        #[route("/settings")]
+        Settings {},
+        #[route("/create_edit")]
+        Create_edit {},
+        #[route("/article")]
+        Article {},
     // #[route("/blog/:id")]
     // Blog { id: i32 },
 }
