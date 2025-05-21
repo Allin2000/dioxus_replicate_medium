@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 
-// use components::Navbar;
 use components::Header;
 use components::Footer;
 
@@ -10,7 +9,6 @@ use stores::app_state::{AppState, AuthStatus};
 use gloo_timers::future::TimeoutFuture; // <-- 新增
 use web_sys::console; // <-- 新增
 
-// use views::{Blog, Home};
 use views::{Home,Login,Register,Profile,Settings,Create_edit,Article};
 
 mod components;
@@ -24,9 +22,8 @@ mod stores;
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
-    // #[layout(Navbar)]
+
     #[layout(Wrapper)]
-    // #[layout(Footer)]
         #[route("/")]
         Home {},
         #[route("/login")]
@@ -41,13 +38,31 @@ enum Route {
         Create_edit {},
         #[route("/article")]
         Article {},
-    // #[route("/blog/:id")]
-    // Blog { id: i32 },
 }
 
 
 #[component]
 fn Wrapper() -> Element{
+
+    // FIX 1: 创建一个 Signal<AppState>，而不是直接 AppState::new()
+    let app_state_signal = use_signal(|| AppState::new());
+
+    // FIX 2: use_effect 中捕获 app_state_signal，并操作其内部的 auth_status 信号
+    use_effect(move || {
+        // 使用 .read() 获取 Signal<AppState> 内部的 AppState 引用，然后访问 auth_status
+        // auth_status 本身就是 Signal，所以可以直接 .clone() 给异步块
+        let mut auth_status_inner_signal = app_state_signal.read().auth_status; // auth_status 自身就是 Signal
+
+        spawn(async move {
+            TimeoutFuture::new(200).await;
+            auth_status_inner_signal.set(AuthStatus::LoggedIn); // 直接设置 auth_status
+            console::log_1(&"Simulated login state set to LoggedIn!".into());
+        });
+    });
+
+    // FIX 3: use_context_provider 提供 Signal<AppState>
+    use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
+
     rsx! {
         Header {}
         Outlet::<Route> {}
@@ -69,7 +84,7 @@ fn main() {
 fn App() -> Element {
     // Build cool things ✌️
 
-    let app_state = AppState::new();
+  
 
         // **Simulate a login after 2 seconds for demonstration purposes.**
     // In a real application, this would be updated after a successful API login call.
@@ -83,18 +98,6 @@ fn App() -> Element {
     // });
 
         // 2. 模拟登录状态改变 (2 秒后模拟登录)
-    use_effect(move || {
-        let mut auth_status_signal = app_state.auth_status; // 克隆信号，以便在异步块中使用
-        spawn(async move {
-            TimeoutFuture::new(2000).await; // 使用 gloo-timers 实现 2 秒延迟
-            auth_status_signal.set(AuthStatus::LoggedIn); // 设置全局状态为已登录
-            console::log_1(&"Simulated login state set to LoggedIn!".into()); // 使用 web_sys 打印到控制台
-        });
-    });
-
-
-
-    use_context_provider(|| app_state.clone()); // `use_context_provider` 接收一个返回上下文值的闭包
 
 
     rsx! {
@@ -115,16 +118,3 @@ fn App() -> Element {
     }
 }
 
-
-// #[component]
-// fn App() -> Element {
-//     // Build cool things ✌️
-
-//     rsx! {
-//         // Global app resources
-//         document::Link { rel: "icon", href: FAVICON }
-//         document::Link { rel: "stylesheet", href: MAIN_CSS }
-
-//         Router::<Route> {}
-//     }
-// }

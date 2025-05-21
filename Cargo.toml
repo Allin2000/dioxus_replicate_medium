@@ -7,7 +7,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.6.0", features = ["router"] }
+dioxus = { version = "0.6.0", features = ["router","signals"] }
+dioxus-signals = "0.6" # <-- 添加这一行
 reqwest = { version = "0.12.15", features = ["json"] }
 serde = "1.0.219"
 gloo-timers = { version = "0.2", features = ["futures"] } # <-- 修正：添加 features = ["futures"]
