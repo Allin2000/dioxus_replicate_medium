@@ -9,6 +9,7 @@ use views::{Home,Login,Register,Profile,Settings,Create_edit,Article};
 
 mod components;
 mod views;
+mod api;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -52,18 +53,6 @@ fn main() {
     dioxus::launch(App);
 }
 
-// #[component]
-// fn App() -> Element {
-//     // Build cool things ✌️
-
-//     rsx! {
-//         // Global app resources
-//         document::Link { rel: "icon", href: FAVICON }
-//         document::Link { rel: "stylesheet", href: MAIN_CSS }
-
-//         Router::<Route> {}
-//     }
-// }
 
 
 #[component]
@@ -85,3 +74,17 @@ fn App() -> Element {
         Router::<Route> {}
     }
 }
+
+
+// #[component]
+// fn App() -> Element {
+//     // Build cool things ✌️
+
+//     rsx! {
+//         // Global app resources
+//         document::Link { rel: "icon", href: FAVICON }
+//         document::Link { rel: "stylesheet", href: MAIN_CSS }
+
+//         Router::<Route> {}
+//     }
+// }

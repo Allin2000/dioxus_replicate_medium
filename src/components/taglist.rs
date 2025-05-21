@@ -1,29 +1,14 @@
 use dioxus::prelude::*;
-use reqwest;
 use serde::Deserialize;
+use crate::api::tag::fetch_tags;
 
-#[derive(Deserialize, Debug, Clone)]
-struct TagResponse {
-    tags: Vec<String>,
-}
 
 #[component]
 pub fn TagList() -> Element {
-    // 异步加载 tags 数据
-    // use_resource 返回一个 Resource，其 state 是 ReadOnlySignal<Option<Result<T, E>>> (或类似，取决于闭包返回类型)
-    // 在你的代码中，闭包返回的是 Option<Vec<String>>，所以 Resource 最终的状态值是 ReadOnlySignal<Option<Option<Vec<String>>>>
-    let tags = use_resource(|| async {
-        let client = reqwest::Client::new();
-        let response = client
-            .get("http://localhost:8000/api/tags")
-            .send()
-            .await
-            .ok()? // 处理 send/await 可能的错误，将 Err 转换为 None，从而导致 use_resource 的值为 Some(None)
-            .json::<TagResponse>()
-            .await // json() 也是异步的，需要 await
-            .ok()?; // 处理 json/await 可能的错误，将 Err 转换为 None，从而导致 use_resource 的值为 Some(None)
-        Some(response.tags) // 如果所有步骤都成功，返回 Some(Vec<String>)，导致 use_resource 的值为 Some(Some(Vec<String>))
-    });
+
+        let tags = use_resource(|| async {
+            fetch_tags().await.map(|tags| tags)
+        });
 
     // 根据加载状态渲染不同内容
     // !! 这里是修复点 !!
@@ -58,3 +43,6 @@ pub fn TagList() -> Element {
         None => rsx!(p { "Loading tags..." }),
     }
 }
+
+
+

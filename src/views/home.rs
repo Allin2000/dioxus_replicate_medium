@@ -1,15 +1,3 @@
-// use crate::components::Hero;
-// use dioxus::prelude::*;
-
-// #[component]
-// pub fn Home() -> Element {
-//     rsx! {
-//         Hero {}
-
-//     }
-// }
-
-// use crate::components::Hero;
 use dioxus::prelude::*;
 use crate::components::TagList;
 use crate::components::ArticleList;
@@ -67,5 +55,20 @@ pub fn Home() -> Element {
     }
     }
 }
+
+
+
+// use crate::components::Hero;
+// use dioxus::prelude::*;
+
+// #[component]
+// pub fn Home() -> Element {
+//     rsx! {
+//         Hero {}
+
+//     }
+// }
+
+// use crate::components::Hero;
 
 

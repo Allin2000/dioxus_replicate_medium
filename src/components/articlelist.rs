@@ -63,6 +63,9 @@ pub fn ArticleList() -> Element {
     // articles.value() 返回 ReadOnlySignal，需要调用它来获取实际值
     match articles.value()() { // <-- 将 .read() 修改为 .value()()
         // 数据加载完成，成功获取 Some(Some(articles))
+        Some(Some(articles)) if articles.is_empty() => {
+        rsx!(p { "No articles are here... yet." })
+        },
         Some(Some(articles)) => rsx! {
             // 遍历文章列表，渲染每个文章预览
             // !! 修复点 !! 为外层循环添加 key
