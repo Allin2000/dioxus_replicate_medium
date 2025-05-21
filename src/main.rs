@@ -18,7 +18,6 @@ mod stores;
 
 
 
-
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
@@ -54,7 +53,7 @@ fn Wrapper() -> Element{
         let mut auth_status_inner_signal = app_state_signal.read().auth_status; // auth_status 自身就是 Signal
 
         spawn(async move {
-            TimeoutFuture::new(200).await;
+            TimeoutFuture::new(20000).await;
             auth_status_inner_signal.set(AuthStatus::LoggedIn); // 直接设置 auth_status
             console::log_1(&"Simulated login state set to LoggedIn!".into());
         });

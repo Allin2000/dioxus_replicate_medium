@@ -117,9 +117,9 @@
 
 
 
-
+// src/views/home.rs
 use dioxus::prelude::*;
-use crate::components::TagList;
+use crate::components::TagList; 
 use crate::components::ArticleList;
 use crate::stores::app_state::{AppState, AuthStatus};
 
@@ -131,27 +131,25 @@ pub fn Home() -> Element {
     // 2. 安全地获取登录状态
     let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
 
-    // 3. 本地状态：管理当前选中的 Feed 类型
+    // 3. 本地状态，用于管理当前选中的 Feed 类型
     // true 表示 "Your Feed" 活跃，false 表示 "Global Feed" 活跃
-    // 默认根据登录状态初始化
-    let mut show_your_feed = use_signal(|| is_logged_in);
+    // We'll initialize it based on login status, but user clicks will override.
+    let mut show_your_feed = use_signal(|| false); // Initialize to false (Global Feed)
 
-    // 新状态：用户是否主动点击过任意 Feed 选项卡。初始为 false。
-    // 这个信号是关键，用来区分“自动切换”和“用户手动选择”。
+    // New state: track if the user has explicitly clicked a feed tab.
     let mut has_user_clicked_feed_tab = use_signal(|| false);
 
-    // 4. 使用 `use_effect` 响应全局 `AuthStatus` 的变化
-    // 这个 effect 只在用户没有手动选择过 Feed 时（has_user_clicked_feed_tab 为 false）才自动切换。
+    // 4. Use `use_effect` to react to global `AuthStatus` changes and
+    // also to initialize or reset `show_your_feed` if no explicit click has occurred.
     use_effect(move || {
         let current_auth_status = *app_state_signal.read().auth_status.read();
 
-        if !*has_user_clicked_feed_tab.read() { // 仅当用户未手动点击时才进行自动切换
-            if current_auth_status == AuthStatus::LoggedIn && !*show_your_feed.read() {
-                // 如果已登录且当前不在 Your Feed，则自动切换到 Your Feed
-                show_your_feed.set(true);
-            } else if current_auth_status == AuthStatus::LoggedOut && *show_your_feed.read() {
-                // 如果已登出且当前在 Your Feed，则自动切换到 Global Feed
-                // show_your_feed.set(false);
+        // Only auto-switch if the user hasn't explicitly clicked a feed tab
+        if !*has_user_clicked_feed_tab.read() {
+            if current_auth_status == AuthStatus::LoggedIn {
+                show_your_feed.set(true); // If logged in and no click, default to Your Feed
+            } else {
+                show_your_feed.set(false); // If logged out and no click, default to Global Feed
             }
         }
     });
@@ -169,7 +167,7 @@ pub fn Home() -> Element {
                     div { class: "col-md-9",
                         div { class: "feed-toggle",
                             ul { class: "nav nav-pills outline-active",
-                                // 登录状态下才显示 "Your Feed" 选项卡
+                                // 登录状态下才显示 "Your Feed"
                                 if is_logged_in {
                                     li { class: "nav-item",
                                         a {
@@ -177,8 +175,8 @@ pub fn Home() -> Element {
                                             href: "",
                                             prevent_default: "onclick",
                                             onclick: move |_|{
-                                                has_user_clicked_feed_tab.set(true); // 用户主动点击了，设置标志
-                                                show_your_feed.set(true);            // 显式切换到 Your Feed
+                                                show_your_feed.set(true);
+                                                has_user_clicked_feed_tab.set(true); // User clicked "Your Feed"
                                             },
                                             "Your Feed"
                                         }
@@ -191,8 +189,8 @@ pub fn Home() -> Element {
                                         href: "",
                                         prevent_default: "onclick",
                                         onclick: move |_| {
-                                            has_user_clicked_feed_tab.set(true); // 用户主动点击了，设置标志
-                                            show_your_feed.set(false);           // 显式切换到 Global Feed
+                                            show_your_feed.set(false);
+                                            has_user_clicked_feed_tab.set(true); // User clicked "Global Feed"
                                         },
                                         "Global Feed"
                                     }
@@ -200,11 +198,8 @@ pub fn Home() -> Element {
                             }
                         }
 
-                        // 将 `show_your_feed` 和 `has_user_clicked_feed_tab` 状态传递给 ArticleList
-                        ArticleList {
-                            show_your_feed: *show_your_feed.read(),
-                            has_user_clicked_feed_tab: *has_user_clicked_feed_tab.read()
-                        }
+                        // 将 `show_your_feed` 状态传递给 ArticleList
+                        ArticleList { show_your_feed: *show_your_feed.read() }
 
                         ul { class: "pagination",
                             li { class: "page-item active",
@@ -219,7 +214,7 @@ pub fn Home() -> Element {
                         div { class: "sidebar",
                             p { "Popular Tags" }
                             div { class: "tag-list",
-                                TagList { }
+                                TagList { } 
                             }
                         }
                     }
@@ -228,4 +223,6 @@ pub fn Home() -> Element {
         }
     }
 }
+
+
 
