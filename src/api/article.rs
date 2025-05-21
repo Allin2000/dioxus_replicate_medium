@@ -3,13 +3,38 @@ use reqwest::Client;
 use serde::Deserialize;
 use std::collections::HashMap;
 
-#[derive(Deserialize, Debug, Clone)]
-pub struct ArticleAuthor {
-    pub username: String,
-    pub bio: Option<String>,
-    pub image: Option<String>,
-    pub following: bool,
+
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+pub struct Article {
+    pub slug: String,
+    pub title: String,
+    pub description: String,
+    #[serde(rename = "tagList")] // 匹配 JSON 字段名
+    pub tag_list: Vec<String>,
+    #[serde(rename = "createdAt")] // 匹配 JSON 字段名
+    pub created_at: String,
+    #[serde(rename = "updatedAt")] // 匹配 JSON 字段名
+    pub updated_at: String,
+    #[serde(rename = "favorited")] // 匹配 JSON 字段名
+    pub is_favorited: bool,
+    #[serde(rename = "favoritesCount")] // 匹配 JSON 字段名
+    pub favorites_count: u32,
+    pub author: Author,
 }
+
+
+// RealWorld API 的 Author 结构，注意 bio 可能为 null，用 Option<String> 更安全
+#[derive(Debug, Deserialize, Clone, PartialEq)]
+pub struct Author {
+    pub username: String,
+    // pub bio: String, // 如果 API 返回 null 会panic，建议改为 Option<String>
+    pub bio: Option<String>, // 建议改为 Option<String>
+    pub image: String,
+    #[serde(rename = "following")] // 匹配 JSON 字段名
+    pub is_following: bool,
+}
+
+
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ArticlePreview {
@@ -21,13 +46,17 @@ pub struct ArticlePreview {
     pub updatedAt: String,
     pub favorited: bool,
     pub favoritesCount: u32,
-    pub author: ArticleAuthor,
+    pub author: Author,
 }
 
-#[derive(Deserialize, Debug)]
+
+
+// RealWorld API 获取文章列表的响应格式
+#[derive(Debug, Deserialize, Clone)] // Added Clone
 pub struct ArticlesResponse {
-    pub articles: Vec<ArticlePreview>,
-    pub articlesCount: usize,
+    pub articles: Vec<Article>,
+    #[serde(rename = "articlesCount")] // 匹配 JSON 字段名
+    pub articles_count: usize, // 或 u32
 }
 
 /// 查询参数

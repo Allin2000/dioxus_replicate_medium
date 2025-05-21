@@ -4,12 +4,22 @@ use dioxus::prelude::*;
 use components::Header;
 use components::Footer;
 
+use stores::app_state::{AppState, AuthStatus};
+
+// 导入 gloo-timers 和 web_sys
+use gloo_timers::future::TimeoutFuture; // <-- 新增
+use web_sys::console; // <-- 新增
+
 // use views::{Blog, Home};
 use views::{Home,Login,Register,Profile,Settings,Create_edit,Article};
 
 mod components;
 mod views;
 mod api;
+mod stores;
+
+
+
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -59,6 +69,34 @@ fn main() {
 fn App() -> Element {
     // Build cool things ✌️
 
+    let app_state = AppState::new();
+
+        // **Simulate a login after 2 seconds for demonstration purposes.**
+    // In a real application, this would be updated after a successful API login call.
+    // use_effect(move || {
+    //     let auth_status_signal = app_state.auth_status; // Get a clone of the signal for the async block
+    //     spawn(async move {
+    //         dioxus::tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+    //         auth_status_signal.set(AuthStatus::LoggedIn); // Set the global state to LoggedIn
+    //         web_sys::console::log_1(&"Simulated login state set to LoggedIn!".into());
+    //     });
+    // });
+
+        // 2. 模拟登录状态改变 (2 秒后模拟登录)
+    use_effect(move || {
+        let mut auth_status_signal = app_state.auth_status; // 克隆信号，以便在异步块中使用
+        spawn(async move {
+            TimeoutFuture::new(2000).await; // 使用 gloo-timers 实现 2 秒延迟
+            auth_status_signal.set(AuthStatus::LoggedIn); // 设置全局状态为已登录
+            console::log_1(&"Simulated login state set to LoggedIn!".into()); // 使用 web_sys 打印到控制台
+        });
+    });
+
+
+
+    use_context_provider(|| app_state.clone()); // `use_context_provider` 接收一个返回上下文值的闭包
+
+
     rsx! {
         // Global app resources
         head {
@@ -71,6 +109,8 @@ fn App() -> Element {
             // document::Link { rel: "stylesheet", href: MAIN_CSS }
         
         }
+
+
         Router::<Route> {}
     }
 }
