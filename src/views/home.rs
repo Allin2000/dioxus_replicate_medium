@@ -129,6 +129,8 @@ pub fn Home() -> Element {
     let app_state_signal = use_context::<Signal<AppState>>();
 
     // 2. 安全地获取登录状态
+
+
     let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
 
     // 3. 本地状态：管理当前选中的 Feed 类型
@@ -178,7 +180,7 @@ pub fn Home() -> Element {
                                             prevent_default: "onclick",
                                             onclick: move |_|{
                                                 has_user_clicked_feed_tab.set(true); // 用户主动点击了，设置标志
-                                                show_your_feed.set(true);            // 显式切换到 Your Feed
+                                                // show_your_feed.set(true);            // 显式切换到 Your Feed
                                             },
                                             "Your Feed"
                                         }
@@ -191,8 +193,8 @@ pub fn Home() -> Element {
                                         href: "",
                                         prevent_default: "onclick",
                                         onclick: move |_| {
-                                            has_user_clicked_feed_tab.set(true); // 用户主动点击了，设置标志
-                                            show_your_feed.set(false);           // 显式切换到 Global Feed
+                                            has_user_clicked_feed_tab.set(false); // 用户主动点击了，设置标志
+                                            // show_your_feed.set(false);           // 显式切换到 Global Feed
                                         },
                                         "Global Feed"
                                     }
@@ -202,7 +204,7 @@ pub fn Home() -> Element {
 
                         // 将 `show_your_feed` 和 `has_user_clicked_feed_tab` 状态传递给 ArticleList
                         ArticleList {
-                            show_your_feed: *show_your_feed.read(),
+                            // show_your_feed: *show_your_feed.read(),
                             has_user_clicked_feed_tab: *has_user_clicked_feed_tab.read()
                         }
 
@@ -228,4 +230,6 @@ pub fn Home() -> Element {
         }
     }
 }
+
+
 

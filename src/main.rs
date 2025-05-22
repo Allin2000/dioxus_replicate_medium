@@ -44,24 +44,28 @@ enum Route {
 #[component]
 fn Wrapper() -> Element{
 
-    // FIX 1: 创建一个 Signal<AppState>，而不是直接 AppState::new()
-    let app_state_signal = use_signal(|| AppState::new());
 
-    // FIX 2: use_effect 中捕获 app_state_signal，并操作其内部的 auth_status 信号
-    use_effect(move || {
-        // 使用 .read() 获取 Signal<AppState> 内部的 AppState 引用，然后访问 auth_status
-        // auth_status 本身就是 Signal，所以可以直接 .clone() 给异步块
-        let mut auth_status_inner_signal = app_state_signal.read().auth_status; // auth_status 自身就是 Signal
 
-        spawn(async move {
-            TimeoutFuture::new(200).await;
-            auth_status_inner_signal.set(AuthStatus::LoggedIn); // 直接设置 auth_status
-            console::log_1(&"Simulated login state set to LoggedIn!".into());
-        });
-    });
+    //     // ***** 重点修改这里：使用 use_future 来进行一次性的模拟登录 *****
+    // use_future(move || {
+    //     let mut auth_status_inner_signal = app_state_signal.read().auth_status;
 
-    // FIX 3: use_context_provider 提供 Signal<AppState>
-    use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
+    //     async move {
+    //         // 只有在初始状态是 LoggedOut 时才进行模拟登录
+    //         if *auth_status_inner_signal.read() == AuthStatus::LoggedOut {
+    //             TimeoutFuture::new(200).await; // 等待 200ms
+    //             if *auth_status_inner_signal.read() == AuthStatus::LoggedOut { // 再次检查以防竞态
+    //                 auth_status_inner_signal.set(AuthStatus::LoggedIn);
+    //                 console::log_1(&"Simulated login state set to LoggedIn!".into());
+    //             }
+    //         }
+    //         // use_future 必须返回一个值，这里返回一个空的元组
+    //         ()
+    //     }
+    // });
+
+    // // FIX 3: use_context_provider 提供 Signal<AppState>
+    // use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
 
     rsx! {
         Header {}
@@ -84,20 +88,46 @@ fn main() {
 fn App() -> Element {
     // Build cool things ✌️
 
-  
+      // FIX 1: 创建一个 Signal<AppState>，而不是直接 AppState::new()
+    let app_state_signal = use_signal(|| AppState::new());
 
-        // **Simulate a login after 2 seconds for demonstration purposes.**
-    // In a real application, this would be updated after a successful API login call.
+    // // FIX 2: use_effect 中捕获 app_state_signal，并操作其内部的 auth_status 信号
     // use_effect(move || {
-    //     let auth_status_signal = app_state.auth_status; // Get a clone of the signal for the async block
+    //     // 使用 .read() 获取 Signal<AppState> 内部的 AppState 引用，然后访问 auth_status
+    //     // auth_status 本身就是 Signal，所以可以直接 .clone() 给异步块
+    //     let mut auth_status_inner_signal = app_state_signal.read().auth_status; // auth_status 自身就是 Signal
+
     //     spawn(async move {
-    //         dioxus::tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-    //         auth_status_signal.set(AuthStatus::LoggedIn); // Set the global state to LoggedIn
-    //         web_sys::console::log_1(&"Simulated login state set to LoggedIn!".into());
+    //         TimeoutFuture::new(200).await;
+    //         auth_status_inner_signal.set(AuthStatus::LoggedIn); // 直接设置 auth_status
+    //         console::log_1(&"Simulated login state set to LoggedIn!".into());
     //     });
     // });
 
-        // 2. 模拟登录状态改变 (2 秒后模拟登录)
+
+
+        use_future(move || {
+        let mut auth_status_inner_signal = app_state_signal.read().auth_status;
+
+        async move {
+            // 只有在初始状态是 LoggedOut 时才进行模拟登录
+            if *auth_status_inner_signal.read() == AuthStatus::LoggedOut {
+                TimeoutFuture::new(200).await; // 等待 200ms
+                if *auth_status_inner_signal.read() == AuthStatus::LoggedOut { // 再次检查以防竞态
+                    auth_status_inner_signal.set(AuthStatus::LoggedIn);
+                    console::log_1(&"Simulated login state set to LoggedIn!".into());
+                }
+            }
+            // use_future 必须返回一个值，这里返回一个空的元组
+            ()
+        }
+    });
+
+
+
+
+    use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
+    
 
 
     rsx! {
