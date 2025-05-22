@@ -3,11 +3,13 @@ use dioxus::prelude::*;
 use components::Header;
 use components::Footer;
 
-use stores::app_state::{AppState, AuthStatus};
+// use stores::app_state::{AppState, AuthStatus,HomeState};
+use crate::stores::app_state::{APP_STATE, HOME_STATE, AuthStatus};
 
-// 导入 gloo-timers 和 web_sys
-use gloo_timers::future::TimeoutFuture; // <-- 新增
-use web_sys::console; // <-- 新增
+
+// // 导入 gloo-timers 和 web_sys
+// use gloo_timers::future::TimeoutFuture; // <-- 新增
+// use web_sys::console; // <-- 新增
 
 use views::{Home,Login,Register,Profile,Settings,Create_edit,Article};
 
@@ -43,24 +45,12 @@ enum Route {
 #[component]
 fn Wrapper() -> Element{
 
-    // FIX 1: 创建一个 Signal<AppState>，而不是直接 AppState::new()
-    let app_state_signal = use_signal(|| AppState::new());
+    //  let app_state_signal = use_context::<Signal<AppState>>();
+    // let home_state_signal = use_context::<Signal<HomeState>>();
 
-    // FIX 2: use_effect 中捕获 app_state_signal，并操作其内部的 auth_status 信号
-    use_effect(move || {
-        // 使用 .read() 获取 Signal<AppState> 内部的 AppState 引用，然后访问 auth_status
-        // auth_status 本身就是 Signal，所以可以直接 .clone() 给异步块
-        let mut auth_status_inner_signal = app_state_signal.read().auth_status; // auth_status 自身就是 Signal
-
-        spawn(async move {
-            TimeoutFuture::new(20000).await;
-            auth_status_inner_signal.set(AuthStatus::LoggedIn); // 直接设置 auth_status
-            console::log_1(&"Simulated login state set to LoggedIn!".into());
-        });
-    });
-
-    // // FIX 3: use_context_provider 提供 Signal<AppState>
-    // use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
+    // // 2. 将这些 Signal 重新提供给 Wrapper 的子组件（包括 Outlet 渲染的路由组件）
+    // use_context_provider(|| app_state_signal);
+    // use_context_provider(|| home_state_signal);
 
     rsx! {
         Header {}
@@ -83,45 +73,34 @@ fn main() {
 fn App() -> Element {
     // Build cool things ✌️
 
-      // FIX 1: 创建一个 Signal<AppState>，而不是直接 AppState::new()
-    let app_state_signal = use_signal(|| AppState::new());
 
-    // // FIX 2: use_effect 中捕获 app_state_signal，并操作其内部的 auth_status 信号
-    // use_effect(move || {
-    //     // 使用 .read() 获取 Signal<AppState> 内部的 AppState 引用，然后访问 auth_status
-    //     // auth_status 本身就是 Signal，所以可以直接 .clone() 给异步块
-    //     let mut auth_status_inner_signal = app_state_signal.read().auth_status; // auth_status 自身就是 Signal
+    use_effect(|| {
+        // CORRECT: Directly use APP_STATE and HOME_STATE. They are `Copy` types.
+        // No need for .to_owned() or cloning the GlobalSignal itself.
+        // The `move` keyword in `spawn(async move { ... })` handles moving the
+        // necessary parts of the environment into the async block.
+        spawn(async move {
+            // Access the inner AppState by calling .read() on the GlobalSignal
+            let app_state_guard = APP_STATE.read(); // Access APP_STATE directly
+            // Then access the auth_status Signal within AppState
+            let is_logged_in_on_start = matches!(*app_state_guard.auth_status.read(), AuthStatus::LoggedIn);
 
-    //     spawn(async move {
-    //         TimeoutFuture::new(200).await;
-    //         auth_status_inner_signal.set(AuthStatus::LoggedIn); // 直接设置 auth_status
-    //         console::log_1(&"Simulated login state set to LoggedIn!".into());
-    //     });
-    // });
-
-
-
-        use_future(move || {
-        let mut auth_status_inner_signal = app_state_signal.read().auth_status;
-
-        async move {
-            // 只有在初始状态是 LoggedOut 时才进行模拟登录
-            if *auth_status_inner_signal.read() == AuthStatus::LoggedOut {
-                TimeoutFuture::new(200).await; // 等待 200ms
-                if *auth_status_inner_signal.read() == AuthStatus::LoggedOut { // 再次检查以防竞态
-                    auth_status_inner_signal.set(AuthStatus::LoggedIn);
-                    console::log_1(&"Simulated login state set to LoggedIn!".into());
-                }
-            }
-            // use_future 必须返回一个值，这里返回一个空的元组
-            ()
-        }
+            // Access the inner HomeState by calling .write() on the GlobalSignal
+            let mut home_state_guard = HOME_STATE.write(); // Access HOME_STATE directly
+            // Then access the has_user_clicked_feed_tab Signal within HomeState
+            *home_state_guard.has_user_clicked_feed_tab.write() = is_logged_in_on_start;
+        });
     });
 
+//     let app_state_signal = use_signal(|| AppState::new());
+//     let initial_is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
+//   let home_state_signal = use_signal(move || HomeState::new(false));
 
 
 
-    use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
+
+    // use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
+    // use_context_provider(|| home_state_signal); // 直接提供 app_state_signal
     
 
 
