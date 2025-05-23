@@ -3,8 +3,10 @@ use dioxus::prelude::*;
 use components::Header;
 use components::Footer;
 
-// use stores::app_state::{AppState, AuthStatus,HomeState};
-use crate::stores::app_state::{APP_STATE, HOME_STATE, AuthStatus};
+use stores::app_state::{AppState, AuthStatus};
+
+use crate::views::GlobalFeed;
+use crate::views::YourFeed;
 
 
 // // 导入 gloo-timers 和 web_sys
@@ -20,6 +22,7 @@ mod stores;
 
 
 
+
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
@@ -27,6 +30,13 @@ enum Route {
     #[layout(Wrapper)]
         #[route("/")]
         Home {},
+
+        #[route("/global")]
+        GlobalFeed {},
+
+        #[route("/your")]
+        YourFeed {},
+
         #[route("/login")]
         Login {},
         #[route("/register")]
@@ -39,18 +49,21 @@ enum Route {
         Create_edit {},
         #[route("/article")]
         Article {},
+        // #[route("/article/:slug")] // Added :slug for individual article view
+        // Article { slug: String },
 }
+
+
 
 
 #[component]
 fn Wrapper() -> Element{
 
     //  let app_state_signal = use_context::<Signal<AppState>>();
-    // let home_state_signal = use_context::<Signal<HomeState>>();
+ 
 
     // // 2. 将这些 Signal 重新提供给 Wrapper 的子组件（包括 Outlet 渲染的路由组件）
     // use_context_provider(|| app_state_signal);
-    // use_context_provider(|| home_state_signal);
 
     rsx! {
         Header {}
@@ -74,35 +87,10 @@ fn App() -> Element {
     // Build cool things ✌️
 
 
-    use_effect(|| {
-        // CORRECT: Directly use APP_STATE and HOME_STATE. They are `Copy` types.
-        // No need for .to_owned() or cloning the GlobalSignal itself.
-        // The `move` keyword in `spawn(async move { ... })` handles moving the
-        // necessary parts of the environment into the async block.
-        spawn(async move {
-            // Access the inner AppState by calling .read() on the GlobalSignal
-            let app_state_guard = APP_STATE.read(); // Access APP_STATE directly
-            // Then access the auth_status Signal within AppState
-            let is_logged_in_on_start = matches!(*app_state_guard.auth_status.read(), AuthStatus::LoggedIn);
+    let app_state_signal = use_signal(|| AppState::new());
+    use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
 
-            // Access the inner HomeState by calling .write() on the GlobalSignal
-            let mut home_state_guard = HOME_STATE.write(); // Access HOME_STATE directly
-            // Then access the has_user_clicked_feed_tab Signal within HomeState
-            *home_state_guard.has_user_clicked_feed_tab.write() = is_logged_in_on_start;
-        });
-    });
-
-//     let app_state_signal = use_signal(|| AppState::new());
-//     let initial_is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
-//   let home_state_signal = use_signal(move || HomeState::new(false));
-
-
-
-
-    // use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
-    // use_context_provider(|| home_state_signal); // 直接提供 app_state_signal
     
-
 
     rsx! {
         // Global app resources
@@ -121,4 +109,3 @@ fn App() -> Element {
         Router::<Route> {}
     }
 }
-
