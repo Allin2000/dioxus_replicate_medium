@@ -3,15 +3,12 @@ use dioxus::prelude::*;
 use components::Header;
 use components::Footer;
 
-use stores::app_state::{AppState, AuthStatus};
+use stores::app_state::{AppState};
 
 use crate::views::GlobalFeed;
 use crate::views::YourFeed;
 
 
-// // 导入 gloo-timers 和 web_sys
-// use gloo_timers::future::TimeoutFuture; // <-- 新增
-// use web_sys::console; // <-- 新增
 
 use views::{Home,Login,Register,Profile,Settings,Create_edit,Article};
 
@@ -21,21 +18,32 @@ mod api;
 mod stores;
 
 
-
-
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
 
     #[layout(Wrapper)]
+        // #[route("/")]
+        // Home {},
+        
+        // #[route("/global")]
+        // GlobalFeed {},
+
+        // #[route("/feed")]
+        // YourFeed {},
+
+        // #[nest("/")]
+        #[layout(Home)]
         #[route("/")]
-        Home {},
-
-        #[route("/global")]
         GlobalFeed {},
+                
+        // #[route("/global")]
+        // GlobalFeed {},
 
-        #[route("/your")]
+        #[route("/feed")]
         YourFeed {},
+        #[end_layout]
+        #[end_nest]
 
         #[route("/login")]
         Login {},
@@ -49,10 +57,8 @@ enum Route {
         Create_edit {},
         #[route("/article")]
         Article {},
-        // #[route("/article/:slug")] // Added :slug for individual article view
-        // Article { slug: String },
-}
 
+}
 
 
 
@@ -86,7 +92,8 @@ fn main() {
 fn App() -> Element {
     // Build cool things ✌️
 
-
+    #[cfg(debug_assertions)]
+    wasm_logger::init(wasm_logger::Config::default());
     let app_state_signal = use_signal(|| AppState::new());
     use_context_provider(|| app_state_signal); // 直接提供 app_state_signal
 

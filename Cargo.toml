@@ -11,8 +11,8 @@ dioxus = { version = "0.6.0", features = ["router","signals"] }
 dioxus-signals = "0.6" # <-- 添加这一行
 reqwest = { version = "0.12.15", features = ["json"] }
 serde = "1.0.219"
-gloo-timers = { version = "0.2", features = ["futures"] } # <-- 修正：添加 features = ["futures"]
-web-sys = { version = "0.3", features = ["console"] } # <-- 新增
+log = "0.4"
+wasm-logger = "0.2"  # 用于web环境的日志
 
 [features]
 default = ["web"]

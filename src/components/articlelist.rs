@@ -2,11 +2,19 @@
 use dioxus::prelude::*;
 use crate::api::article::{fetch_articles};
 
+#[derive(PartialEq, Props, Clone)]
+pub struct ArticleListProps {
+    feed_type: String,
+}
+
+
 
 #[component]
 // 接收一个布尔值 prop，用于判断显示哪种 Feed
-pub fn ArticleList(feed_type: String) -> Element {
+pub fn ArticleList(props: ArticleListProps) -> Element {
  
+    let feed_type = &props.feed_type;
+    // 你可以根据 feed_type 执行不同逻辑
     let _ = feed_type;
    
     let articles = use_resource(|| async {

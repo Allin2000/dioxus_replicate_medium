@@ -1,7 +1,6 @@
 // src/views/home.rs
 use dioxus::prelude::*;
 use crate::components::TagList; 
-use crate::components::ArticleList;
 use crate::stores::app_state::{AppState, AuthStatus};
 use crate::{Route}; // 
 
@@ -15,18 +14,17 @@ pub fn Home() -> Element {
     // 2. 安全地获取登录状态
     let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
 
-        // Get the current route to determine which feed is active
-    let route = use_route::<Route>();
-    // Determine the active feed type based on the route
-    let current_feed_type = match route {
-        Route::YourFeed {} => "Your Feed",
-        Route::Home {} => "Global Feed",
-        // If you add a TagFeed route, handle it here too
-        _ => "Global Feed", // Default to Global Feed if route doesn't match
-    };
-
 
     let current_route = use_route::<Route>();
+
+    
+    // 根据路由确定当前的feed类型
+
+    let current_feed_type = match current_route{
+        Route::YourFeed {} => "Your Feed",
+        Route::GlobalFeed {} => "Global Feed",
+        _ => "Global Feed", // 默认为Global Feed
+    };
 
 
 
@@ -59,6 +57,7 @@ pub fn Home() -> Element {
                                   Link {
                                          to: Route::GlobalFeed {},
                                         class: format!("nav-link {}", if current_feed_type == "Global Feed" { "active" } else { "" }),
+                        
                                         "Global Feed"
                                     }
                                 }

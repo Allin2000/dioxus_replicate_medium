@@ -1,8 +1,7 @@
 mod home;
 pub use home::Home;
 
-// mod blog;
-// pub use blog::Blog;
+
 
 mod login;
 pub use login::Login;
@@ -27,5 +26,3 @@ pub use global_feed::GlobalFeed;
 
 mod your_feed;   // <-- New module
 pub use your_feed::YourFeed;
-
-// pub use crate::HomeChildren;
