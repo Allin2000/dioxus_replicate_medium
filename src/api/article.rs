@@ -1,8 +1,6 @@
 // src/api/article.rs
 use reqwest::Client;
 use serde::Deserialize;
-use std::collections::HashMap;
-
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Article {

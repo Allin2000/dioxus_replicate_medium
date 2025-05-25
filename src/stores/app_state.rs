@@ -1,3 +1,4 @@
+// src/stores/app_state.rs
 use dioxus::prelude::*;
 use serde::Serialize;
 use serde::Deserialize;

@@ -7,10 +7,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.6.3", features = ["router","signals"] }
-dioxus-signals = "0.6.3" # <-- 添加这一行
+dioxus = { version = "0.6", features = ["router"] }
 reqwest = { version = "0.12.15", features = ["json"] }
-serde = "1.0.219"
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0.140"
 log = "0.4.27"
 wasm-logger = "0.2"  # 用于web环境的日志

@@ -1,3 +1,4 @@
+// src/views/article.rs
 use dioxus::prelude::*;
 
 #[component]

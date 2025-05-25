@@ -1,3 +1,4 @@
+// src/views/profile.rs
 use dioxus::prelude::*;
 
 #[component]

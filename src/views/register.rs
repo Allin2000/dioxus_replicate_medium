@@ -1,57 +1,6 @@
-// use dioxus::prelude::*;
-
-// #[component]
-// pub fn Register() -> Element {
-//     rsx! {
-//         div { class: "auth-page",
-//         div { class: "container page",
-//             div { class: "row",
-//                 div { class: "col-md-6 offset-md-3 col-xs-12",
-//                     h1 { class: "text-xs-center", "Sign up" }
-//                     p { class: "text-xs-center",
-//                         a { href: "/login", "Have an account?" }
-//                     }
-//                     ul { class: "error-messages",
-//                         li { "That email is already taken" }
-//                     }
-//                     form {
-//                         fieldset { class: "form-group",
-//                             input {
-//                                 class: "form-control form-control-lg",
-//                                 placeholder: "Username",
-//                                 r#type: "text",
-//                             }
-//                         }
-//                         fieldset { class: "form-group",
-//                             input {
-//                                 class: "form-control form-control-lg",
-//                                 placeholder: "Email",
-//                                 r#type: "text",
-//                             }
-//                         }
-//                         fieldset { class: "form-group",
-//                             input {
-//                                 class: "form-control form-control-lg",
-//                                 placeholder: "Password",
-//                                 r#type: "password",
-//                             }
-//                         }
-//                         button { class: "btn btn-lg btn-primary pull-xs-right",
-//                             "Sign up"
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-// }
-
-
+// src/views/register.rs
 use dioxus::prelude::*;
-use dioxus_router::prelude::use_navigator;
-
-use crate::api::auth;
+use crate::api::auth::register_user;
 use crate::stores::app_state::{AppState, User};
 use crate::Route;
 
@@ -63,53 +12,69 @@ pub fn Register() -> Element {
     let mut username = use_signal(|| "".to_string());
     let mut email = use_signal(|| "".to_string());
     let mut password = use_signal(|| "".to_string());
-    let mut error_messages = use_signal(|| Vec::<String>::new());
-    let is_submitting = use_signal(|| false);
+    let mut is_submitting = use_signal(|| false);
+    let mut register_result = use_signal(|| Option::<String>::None);
 
-    let on_submit = {
+    let mut handle_register = {
         let username = username.clone();
         let email = email.clone();
         let password = password.clone();
-        let mut error_messages = error_messages.clone();
         let mut is_submitting = is_submitting.clone();
+        let mut register_result = register_result.clone();
         let mut app_state_signal = app_state_signal.clone();
         let navigator = navigator.clone();
 
-        move |event: Event<FormData>| {
-            event.prevent_default();
-
+        move || {
             if *is_submitting.read() {
                 return;
             }
 
-            is_submitting.set(true);
-            error_messages.set(Vec::new());
+            let username_val = username();
+            let email_val = email();
+            let password_val = password();
 
-            let username_val = username.read().clone();
-            let email_val = email.read().clone();
-            let password_val = password.read().clone();
+            if username_val.trim().is_empty() || email_val.trim().is_empty() || password_val.trim().is_empty() {
+                register_result.set(Some("❌ 请填写所有字段".to_string()));
+                return;
+            }
+
+            is_submitting.set(true);
+            register_result.set(Some("正在注册...".to_string()));
 
             spawn(async move {
-                match auth::register_user(&username_val, &email_val, &password_val).await {
+                match register_user(&username_val, &email_val, &password_val).await {
                     Some(response) => {
-                        log::info!("Register successful: {:?}", response);
+                        register_result.set(Some(format!("✅ 注册成功: {}", response.user.username)));
                         app_state_signal.write().set_user(User {
                             email: response.user.email,
-                            token: response.user.token,
                             username: response.user.username,
+                            token: response.user.token,
                             bio: response.user.bio,
                             image: response.user.image,
                         });
                         navigator.push(Route::GlobalFeed {});
                     }
                     None => {
-                        log::error!("Register failed");
-                        error_messages.set(vec!["Invalid email or password".to_string()]);
+                        register_result.set(Some("❌ 注册失败，请检查邮箱或密码".to_string()));
                     }
                 }
-
                 is_submitting.set(false);
             });
+        }
+    };
+
+    let on_submit = {
+        let mut handle_register = handle_register.clone();
+        move |event: Event<FormData>| {
+            event.prevent_default();
+            handle_register();
+        }
+    };
+
+    let on_click = {
+        let mut handle_register = handle_register.clone();
+        move |_| {
+            handle_register();
         }
     };
 
@@ -123,48 +88,67 @@ pub fn Register() -> Element {
                             Link { to: Route::Login {}, "Have an account?" }
                         }
 
-                        ul { class: "error-messages",
-                            for msg in error_messages.read().iter() {
+                        if let Some(msg) = &*register_result.read() {
+                            ul { class: "error-messages",
                                 li { "{msg}" }
                             }
                         }
 
                         form {
                             onsubmit: on_submit,
-                            fieldset { class: "form-group",
+                            fieldset {
+                                class: "form-group",
                                 input {
                                     class: "form-control form-control-lg",
                                     placeholder: "Username",
                                     r#type: "text",
-                                    value: "{username.read()}",
+                                    value: "{username()}",
                                     required: true,
                                     oninput: move |evt| username.set(evt.value()),
+                                    onkeydown: move |evt| {
+                                        if evt.key() == Key::Enter {
+                                            handle_register();
+                                        }
+                                    }
                                 }
                             }
-                            fieldset { class: "form-group",
+                            fieldset {
+                                class: "form-group",
                                 input {
                                     class: "form-control form-control-lg",
                                     placeholder: "Email",
                                     r#type: "email",
-                                    value: "{email.read()}",
+                                    value: "{email()}",
                                     required: true,
                                     oninput: move |evt| email.set(evt.value()),
+                                    onkeydown: move |evt| {
+                                        if evt.key() == Key::Enter {
+                                            handle_register();
+                                        }
+                                    }
                                 }
                             }
-                            fieldset { class: "form-group",
+                            fieldset {
+                                class: "form-group",
                                 input {
                                     class: "form-control form-control-lg",
                                     placeholder: "Password",
                                     r#type: "password",
-                                    value: "{password.read()}",
+                                    value: "{password()}",
                                     required: true,
                                     oninput: move |evt| password.set(evt.value()),
+                                    onkeydown: move |evt| {
+                                        if evt.key() == Key::Enter {
+                                            handle_register();
+                                        }
+                                    }
                                 }
                             }
                             button {
                                 class: "btn btn-lg btn-primary pull-xs-right",
                                 r#type: "submit",
                                 disabled: *is_submitting.read(),
+                                onclick: on_click,
                                 "Sign up"
                             }
                         }
