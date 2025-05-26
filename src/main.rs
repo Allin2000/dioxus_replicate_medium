@@ -32,7 +32,6 @@ enum Route {
         // #[route("/feed")]
         // YourFeed {},
 
-        // #[nest("/")]
         #[layout(Home)]
         #[route("/")]
         GlobalFeed {},
@@ -43,7 +42,6 @@ enum Route {
         #[route("/feed")]
         YourFeed {},
         #[end_layout]
-        // #[end_nest]
 
         #[route("/login")]
         Login {},
@@ -65,11 +63,13 @@ enum Route {
 #[component]
 fn Wrapper() -> Element{
 
-    //  let app_state_signal = use_context::<Signal<AppState>>();
+    // let app_state_signal = use_signal(|| AppState::new());
  
 
-    // // 2. 将这些 Signal 重新提供给 Wrapper 的子组件（包括 Outlet 渲染的路由组件）
+    // // // // 2. 将这些 Signal 重新提供给 Wrapper 的子组件（包括 Outlet 渲染的路由组件）
     // use_context_provider(|| app_state_signal);
+
+
 
     rsx! {
         Header {}
