@@ -70,6 +70,26 @@ pub struct UserRegiResponse {
 }
 
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UpdateUserPayload {
+    #[serde(default)]
+    pub email: Option<String>,
+    #[serde(default)]
+    pub username: Option<String>,
+    #[serde(default)]
+    pub password: Option<String>,
+    #[serde(default)]
+    pub image: Option<String>,
+    #[serde(default)]
+    pub bio: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct UpdateUserRequest {
+    pub user: UpdateUserPayload,
+}
+
+
 
 
 /// 注册用户
@@ -141,6 +161,28 @@ pub async fn get_current_user(token: &str) -> Option<UserAuthResponse> {
         .get("http://127.0.0.1:8000/api/user")
         .header("AUTHORIZATION", format!("Token {}", token))
         .header("Accept", "application/json")
+        .send()
+        .await
+        .ok()?
+        .json::<UserAuthResponse>()
+        .await
+        .ok()?;
+
+    Some(response)
+}
+
+
+/// 更新当前用户信息
+pub async fn update_user(token: &str, update: UpdateUserPayload) -> Option<UserAuthResponse> {
+    let client = Client::new();
+
+    let request = UpdateUserRequest { user: update };
+
+    let response = client
+        .put("http://127.0.0.1:8000/api/user")
+        .header("AUTHORIZATION", format!("Token {}", token))
+        .header("Accept", "application/json")
+        .json(&request)
         .send()
         .await
         .ok()?

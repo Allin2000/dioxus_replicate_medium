@@ -1,6 +1,6 @@
 // src/api/article.rs
 use reqwest::Client;
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 
 #[derive(Debug, Deserialize, Clone, PartialEq)]
 pub struct Article {
@@ -97,4 +97,100 @@ pub async fn fetch_articles(query: ArticleQuery) -> Option<ArticlesResponse> {
 
     let response = req.send().await.ok()?.json::<ArticlesResponse>().await.ok()?;
     Some(response)
+}
+
+
+
+
+// 请求 Payload
+#[derive(Deserialize,Serialize, Debug, Clone)]
+pub struct CreateArticleRequest {
+    pub article: CreateArticlePayload,
+}
+
+#[derive(Deserialize,Serialize, Debug, Clone)]
+pub struct CreateArticlePayload {
+    pub title: String,
+    pub description: String,
+    pub body: String,
+    #[serde(rename = "tagList")]
+    pub tag_list: Vec<String>,
+}
+
+// 响应结构
+#[derive(Deserialize, Debug, Clone)]
+pub struct SingleArticleResponse {
+    pub article: Article,
+}
+
+// 创建文章函数
+pub async fn create_article(token: &str, payload: CreateArticlePayload) -> Option<SingleArticleResponse> {
+    let client = Client::new();
+    let request_body = CreateArticleRequest { article: payload };
+
+    let response = client
+        .post("http://localhost:8000/api/articles")
+        .header("Authorization", format!("Token {}", token))
+        .header("Accept", "application/json")
+        .json(&request_body)
+        .send()
+        .await
+        .ok()?
+        .json::<SingleArticleResponse>()
+        .await
+        .ok()?;
+
+    Some(response)
+}
+
+
+
+
+// 请求 Payload（字段都是可选的）
+#[derive(Serialize, Debug, Clone, Default)]
+pub struct UpdateArticleRequest {
+    pub article: UpdateArticlePayload,
+}
+
+#[derive(Serialize, Debug, Clone, Default)]
+pub struct UpdateArticlePayload {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub body: Option<String>,
+}
+
+// 使用 slug 作为路径参数
+pub async fn update_article(token: &str, slug: &str, payload: UpdateArticlePayload) -> Option<SingleArticleResponse> {
+    let client = Client::new();
+    let url = format!("http://localhost:8000/api/articles/{}", slug);
+    let request_body = UpdateArticleRequest { article: payload };
+
+    let response = client
+        .put(&url)
+        .header("Authorization", format!("Token {}", token))
+        .header("Accept", "application/json")
+        .json(&request_body)
+        .send()
+        .await
+        .ok()?
+        .json::<SingleArticleResponse>()
+        .await
+        .ok()?;
+
+    Some(response)
+}
+
+
+
+pub async fn delete_article(token: &str, slug: &str) -> bool {
+    let client = Client::new();
+    let url = format!("http://localhost:8000/api/articles/{}", slug);
+
+    let response = client
+        .delete(&url)
+        .header("Authorization", format!("Token {}", token))
+        .send()
+        .await;
+
+    response.map(|r| r.status().is_success()).unwrap_or(false)
 }
