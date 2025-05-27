@@ -55,6 +55,8 @@ enum Route {
         Create_edit {},
         #[route("/article")]
         Article {},
+        // #[route("/article/:slug")]
+        // Article { slug: String },
 
 }
 

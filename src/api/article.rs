@@ -102,6 +102,30 @@ pub async fn fetch_articles(query: ArticleQuery) -> Option<ArticlesResponse> {
 
 
 
+/// 获取单篇文章详情
+/// `token`: 可选的认证 token，如果提供，后端会根据用户身份返回收藏/关注状态
+pub async fn fetch_article_by_slug(slug: &str, token: Option<String>) -> Option<SingleArticleResponse> {
+    let client = Client::new();
+    let url = format!("http://localhost:8000/api/articles/{}", slug);
+
+    let mut request_builder = client.get(&url)
+        .header("Accept", "application/json");
+
+    // 如果提供了 token，则将其添加到请求头中
+    if let Some(t) = token {
+        request_builder = request_builder.header("Authorization", format!("Token {}", t)); // RealWorld API 使用 "Token " 前缀
+    }
+
+    let response = request_builder
+        .send()
+        .await
+        .ok()?
+        .json::<SingleArticleResponse>()
+        .await
+        .ok()?;
+
+    Some(response) // 返回 SingleArticleResponse，Article 组件再从中提取 Article
+}
 
 // 请求 Payload
 #[derive(Deserialize,Serialize, Debug, Clone)]
