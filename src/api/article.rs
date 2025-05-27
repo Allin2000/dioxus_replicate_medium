@@ -66,6 +66,43 @@ pub struct ArticleQuery {
     pub favorited: Option<String>,
     pub limit: Option<u32>,
     pub offset: Option<u32>,
+
+}
+
+
+// 请求 Payload
+#[derive(Deserialize,Serialize, Debug, Clone)]
+pub struct CreateArticleRequest {
+    pub article: CreateArticlePayload,
+}
+
+#[derive(Deserialize,Serialize, Debug, Clone)]
+pub struct CreateArticlePayload {
+    pub title: String,
+    pub description: String,
+    pub body: String,
+    #[serde(rename = "tagList")]
+    pub tag_list: Vec<String>,
+}
+
+// 响应结构
+#[derive(Deserialize, Debug, Clone)]
+pub struct SingleArticleResponse {
+    pub article: Article,
+}
+
+
+// 请求 Payload（字段都是可选的）
+#[derive(Serialize, Debug, Clone, Default)]
+pub struct UpdateArticleRequest {
+    pub article: UpdateArticlePayload,
+}
+
+#[derive(Serialize, Debug, Clone, Default)]
+pub struct UpdateArticlePayload {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub body: Option<String>,
 }
 
 /// 获取文章列表
@@ -127,26 +164,7 @@ pub async fn fetch_article_by_slug(slug: &str, token: Option<String>) -> Option<
     Some(response) // 返回 SingleArticleResponse，Article 组件再从中提取 Article
 }
 
-// 请求 Payload
-#[derive(Deserialize,Serialize, Debug, Clone)]
-pub struct CreateArticleRequest {
-    pub article: CreateArticlePayload,
-}
 
-#[derive(Deserialize,Serialize, Debug, Clone)]
-pub struct CreateArticlePayload {
-    pub title: String,
-    pub description: String,
-    pub body: String,
-    #[serde(rename = "tagList")]
-    pub tag_list: Vec<String>,
-}
-
-// 响应结构
-#[derive(Deserialize, Debug, Clone)]
-pub struct SingleArticleResponse {
-    pub article: Article,
-}
 
 // 创建文章函数
 pub async fn create_article(token: &str, payload: CreateArticlePayload) -> Option<SingleArticleResponse> {
@@ -171,18 +189,7 @@ pub async fn create_article(token: &str, payload: CreateArticlePayload) -> Optio
 
 
 
-// 请求 Payload（字段都是可选的）
-#[derive(Serialize, Debug, Clone, Default)]
-pub struct UpdateArticleRequest {
-    pub article: UpdateArticlePayload,
-}
 
-#[derive(Serialize, Debug, Clone, Default)]
-pub struct UpdateArticlePayload {
-    pub title: Option<String>,
-    pub description: Option<String>,
-    pub body: Option<String>,
-}
 
 // 使用 slug 作为路径参数
 pub async fn update_article(token: &str, slug: &str, payload: UpdateArticlePayload) -> Option<SingleArticleResponse> {

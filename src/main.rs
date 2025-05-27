@@ -53,10 +53,10 @@ enum Route {
         Settings {},
         #[route("/create_edit")]
         Create_edit {},
-        #[route("/article")]
-        Article {},
-        // #[route("/article/:slug")]
-        // Article { slug: String },
+        // #[route("/article")]
+        // Article {},
+        #[route("/article/:slug")]
+        Article { slug: String },
 
 }
 
