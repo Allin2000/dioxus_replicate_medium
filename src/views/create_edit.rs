@@ -238,6 +238,11 @@ pub fn Create_edit() -> Element {
                                             }
                                         }
                                     }
+                                    div { class: "article-content",
+                                    style: "white-space: pre-wrap; margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 4px;",
+                                    "{article.body}" // 注意：实际应用中可能需要 markdown 渲染
+                                }
+
                                 }
                                 
                                 // 注意：Article 结构体中没有 body 字段

@@ -7,6 +7,7 @@ pub struct Article {
     pub slug: String,
     pub title: String,
     pub description: String,
+    pub body: String,
     #[serde(rename = "tagList")] // 匹配 JSON 字段名
     pub tag_list: Vec<String>,
     #[serde(rename = "createdAt")] // 匹配 JSON 字段名

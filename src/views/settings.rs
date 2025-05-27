@@ -144,7 +144,7 @@ pub fn Settings() -> Element {
                         app_state.write().set_user(User {
                             email: response.user.email,
                             username: response.user.username,
-                            token,
+                            token:response.user.token,
                             bio: response.user.bio,
                             image: response.user.image,
                         });
