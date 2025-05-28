@@ -47,8 +47,10 @@ enum Route {
         Login {},
         #[route("/register")]
         Register {},
-        #[route("/profile")]
-        Profile {},
+        // #[route("/profile")]
+        // Profile {},
+        #[route("/profile/:username")] // <--- Updated route definition
+        Profile { username: String },
         #[route("/settings")]
         Settings {},
         #[route("/create_edit")]

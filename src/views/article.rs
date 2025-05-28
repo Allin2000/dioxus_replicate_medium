@@ -211,26 +211,7 @@ pub fn Article(slug: String) -> Element {
     let article = article.unwrap();
     let is_owner = Some(article.author.username.clone()) == logged_in_username;
 
-// let tag_list: Vec<&str> = article.tag_list.iter().map(|tag| tag.as_str()).collect();
 
-    // let edit_and_delete_buttons = if is_owner {
-    //     rsx! {
-    //         Fragment {
-    //             button { class: "btn btn-sm btn-outline-secondary",
-    //                 i { class: "ion-edit" }
-    //                 " Edit Article"
-    //             }
-    //             button { class: "btn btn-sm btn-outline-danger",
-    //                 i { class: "ion-trash-a" }
-    //                 " Delete Article"
-    //             }
-    //         }
-    //     }
-    // } else {
-    //     rsx! {
-    //         Fragment {}
-    //     }
-    // };
 
     rsx! {
         div { class: "article-page",
@@ -268,7 +249,15 @@ pub fn Article(slug: String) -> Element {
                 div { class: "row article-content",
                     div { class: "col-md-12",
                         p { "{article.body}" }
-                        // ul { class: "tag-list", tag_list}
+                        ul { class: "tag-list",
+                            for tag in article.tag_list.iter() {
+                                li {
+                                    class: "tag-default tag-pill tag-outline",
+                                    key: "{tag}", // Add a key for better performance and state management
+                                    "{tag}"
+                                }
+                            }
+                        }
                     }
                 }
 
