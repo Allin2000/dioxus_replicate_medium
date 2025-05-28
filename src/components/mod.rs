@@ -10,8 +10,12 @@ pub use taglist::TagList;
 mod articlelist;
 pub use articlelist::ArticleList;
 
-mod articlepagination;
-pub use articlepagination::Pagination;
+mod pagination;
+pub use pagination::Pagination;
+
+mod article_list_pagination;
+pub use article_list_pagination::ArticleListWithPagination;
+pub use article_list_pagination::ArticlePreview;
 
 
 

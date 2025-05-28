@@ -15,7 +15,7 @@ pub struct Article {
     #[serde(rename = "updatedAt")] // 匹配 JSON 字段名
     pub updated_at: String,
     #[serde(rename = "favorited")] // 匹配 JSON 字段名
-    pub is_favorited: bool,
+    pub favorited: bool,
     #[serde(rename = "favoritesCount")] // 匹配 JSON 字段名
     pub favorites_count: u32,
     pub author: Author,
@@ -59,7 +59,7 @@ pub struct ArticlesResponse {
 }
 
 /// 查询参数
-#[derive(Default)]
+#[derive(Debug, Clone, Default)]
 pub struct ArticleQuery {
     pub tag: Option<String>,
     pub author: Option<String>,
@@ -137,6 +137,18 @@ pub async fn fetch_articles(query: ArticleQuery) -> Option<ArticlesResponse> {
     Some(response)
 }
 
+
+/// 获取当前用户关注的用户的文章 Feed
+pub async fn fetch_user_feed_articles(token: &str) -> Option<ArticlesResponse> {
+    let client = Client::new();
+    let response = client
+        .get("http://localhost:8000/api/articles/feed")
+        .header("Authorization", format!("Token {}", token))
+        .header("Accept", "application/json")
+        .send().await.ok()?
+        .json::<ArticlesResponse>().await.ok()?;
+    Some(response)
+}
 
 
 /// 获取单篇文章详情

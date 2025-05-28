@@ -68,14 +68,14 @@ pub fn Home() -> Element {
                         
                         Outlet::<Route> {}
 
-                        ul { class: "pagination",
-                            li { class: "page-item active",
-                                a { class: "page-link", href: "", "1" }
-                            }
-                            li { class: "page-item",
-                                a { class: "page-link", href: "", "2" }
-                            }
-                        }
+                        // ul { class: "pagination",
+                        //     li { class: "page-item active",
+                        //         a { class: "page-link", href: "", "1" }
+                        //     }
+                        //     li { class: "page-item",
+                        //         a { class: "page-link", href: "", "2" }
+                        //     }
+                        // }
                     }
                     div { class: "col-md-3",
                         div { class: "sidebar",
