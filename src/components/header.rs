@@ -81,7 +81,7 @@ pub fn Header() -> Element {
 
                     if auth_status == AuthStatus::LoggedIn {
                         li { class: "nav-item",
-                            a { class: "nav-link", href: "/create_edit",
+                            a { class: "nav-link", href: "/create",
                                 i { class: "ion-compose" }
                                 "New Article"
                             }

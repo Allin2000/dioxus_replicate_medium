@@ -10,7 +10,7 @@ use crate::views::YourFeed;
 
 
 
-use views::{Home,Login,Register,Profile,Settings,Create_edit,Article};
+use views::{Home,Login,Register,Profile,Settings,Create,Article,Edit};
 
 mod components;
 mod views;
@@ -53,8 +53,12 @@ enum Route {
         Profile { username: String },
         #[route("/settings")]
         Settings {},
-        #[route("/create_edit")]
-        Create_edit {},
+        #[route("/create")]
+        Create {},
+
+        #[route("/edit/:slug")]
+        Edit {slug:String},
+
         // #[route("/article")]
         // Article {},
         #[route("/article/:slug")]

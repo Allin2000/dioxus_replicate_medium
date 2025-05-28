@@ -15,8 +15,11 @@ pub use profile::Profile;
 mod settings;
 pub use settings::Settings;
 
-mod create_edit;
-pub use create_edit::Create_edit;
+mod create;
+pub use create::Create;
+
+mod edit;
+pub use edit::Edit;
 
 mod article;
 pub use article::Article;

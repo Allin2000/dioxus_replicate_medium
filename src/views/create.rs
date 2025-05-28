@@ -64,13 +64,13 @@
 
 
 
-// src/api/create_edit.rs
+// src/views/create.rs
 use dioxus::prelude::*;
 use crate::api::article::{create_article, CreateArticlePayload, Article};
 use crate::stores::app_state::AppState;
 
 #[component]
-pub fn Create_edit() -> Element {
+pub fn Create() -> Element {
     let mut app_state = use_context::<Signal<AppState>>();
     
     // 先安全获取用户

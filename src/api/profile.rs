@@ -43,3 +43,45 @@ pub async fn fetch_profile(username: &str, token: Option<&str>) -> Option<Profil
 
     Some(resp)
 }
+
+
+
+/// 关注指定用户
+pub async fn follow_user(username: &str, token: &str) -> Option<ProfileResponse> {
+    let client = Client::new();
+    let url = format!("http://localhost:8000/api/profiles/{}/follow", username);
+
+    let resp = client
+        .post(&url)
+        .header("Authorization", format!("Token {}", token))
+        .send()
+        .await
+        .ok()?
+        .error_for_status()
+        .ok()?
+        .json::<ProfileResponse>()
+        .await
+        .ok()?;
+
+    Some(resp)
+}
+
+/// 取消关注指定用户
+pub async fn unfollow_user(username: &str, token: &str) -> Option<ProfileResponse> {
+    let client = Client::new();
+    let url = format!("http://localhost:8000/api/profiles/{}/follow", username);
+
+    let resp = client
+        .delete(&url)
+        .header("Authorization", format!("Token {}", token))
+        .send()
+        .await
+        .ok()?
+        .error_for_status()
+        .ok()?
+        .json::<ProfileResponse>()
+        .await
+        .ok()?;
+
+    Some(resp)
+}

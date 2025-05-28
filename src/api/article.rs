@@ -30,7 +30,7 @@ pub struct Author {
     pub bio: Option<String>, // 建议改为 Option<String>
     pub image: String,
     #[serde(rename = "following")] // 匹配 JSON 字段名
-    pub is_following: bool,
+    pub following: bool,
 }
 
 
@@ -237,4 +237,42 @@ pub async fn delete_article(token: &str, slug: &str) -> bool {
         .await;
 
     response.map(|r| r.status().is_success()).unwrap_or(false)
+}
+
+
+pub async fn favorite_article(token: &str, slug: &str) -> Option<SingleArticleResponse> {
+    let client = reqwest::Client::new();
+    let url = format!("http://localhost:8000/api/articles/{}/favorite", slug);
+
+    let response = client
+        .post(&url)
+        .header("Authorization", format!("Token {}", token))
+        .header("Accept", "application/json")
+        .send()
+        .await
+        .ok()?
+        .json::<SingleArticleResponse>()
+        .await
+        .ok()?;
+
+    Some(response)
+}
+
+
+pub async fn unfavorite_article(token: &str, slug: &str) -> Option<SingleArticleResponse> {
+    let client = reqwest::Client::new();
+    let url = format!("http://localhost:8000/api/articles/{}/favorite", slug);
+
+    let response = client
+        .delete(&url)
+        .header("Authorization", format!("Token {}", token))
+        .header("Accept", "application/json")
+        .send()
+        .await
+        .ok()?
+        .json::<SingleArticleResponse>()
+        .await
+        .ok()?;
+
+    Some(response)
 }
