@@ -35,21 +35,6 @@ pub struct Author {
 
 
 
-// #[derive(Deserialize, Debug, Clone)]
-// pub struct ArticlePreview {
-//     pub slug: String,
-//     pub title: String,
-//     pub description: String,
-//     pub tagList: Vec<String>,
-//     pub createdAt: String,
-//     pub updatedAt: String,
-//     pub favorited: bool,
-//     pub favoritesCount: u32,
-//     pub author: Author,
-// }
-
-
-
 // RealWorld API 获取文章列表的响应格式
 #[derive(Debug, Deserialize, Clone)] // Added Clone
 pub struct ArticlesResponse {
@@ -104,6 +89,20 @@ pub struct UpdateArticlePayload {
     pub description: Option<String>,
     pub body: Option<String>,
 }
+
+// #[derive(Deserialize, Debug, Clone)]
+// pub struct ArticlePreview {
+//     pub slug: String,
+//     pub title: String,
+//     pub description: String,
+//     pub tagList: Vec<String>,
+//     pub createdAt: String,
+//     pub updatedAt: String,
+//     pub favorited: bool,
+//     pub favoritesCount: u32,
+//     pub author: Author,
+// }
+
 
 /// 获取文章列表
 pub async fn fetch_articles(query: ArticleQuery) -> Option<ArticlesResponse> {

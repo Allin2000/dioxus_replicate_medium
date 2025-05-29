@@ -1,4 +1,5 @@
-// // src/components/articlepagination.rs
+// 简单分页版本
+// // src/components/pagination.rs
 // use dioxus::prelude::*;
 
 // #[derive(Props, PartialEq, Clone)]
