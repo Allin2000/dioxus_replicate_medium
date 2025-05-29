@@ -35,18 +35,18 @@ pub struct Author {
 
 
 
-#[derive(Deserialize, Debug, Clone)]
-pub struct ArticlePreview {
-    pub slug: String,
-    pub title: String,
-    pub description: String,
-    pub tagList: Vec<String>,
-    pub createdAt: String,
-    pub updatedAt: String,
-    pub favorited: bool,
-    pub favoritesCount: u32,
-    pub author: Author,
-}
+// #[derive(Deserialize, Debug, Clone)]
+// pub struct ArticlePreview {
+//     pub slug: String,
+//     pub title: String,
+//     pub description: String,
+//     pub tagList: Vec<String>,
+//     pub createdAt: String,
+//     pub updatedAt: String,
+//     pub favorited: bool,
+//     pub favoritesCount: u32,
+//     pub author: Author,
+// }
 
 
 

@@ -18,7 +18,6 @@ web-sys = { version = "0.3.77", features = [
     'Storage',
     'Event', # 用于您视图中的 web_sys::Event
 ] }
-chrono = { version = "0.4", features = ["serde"] }
 
 
 [features]
