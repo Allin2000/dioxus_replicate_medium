@@ -159,7 +159,7 @@
 
 
 
-// 完善切换feed和点击♥
+// 完善切换feed和点击♥  切换feed还有bug
 // src/components/article_list_with_pagination.rs
 use dioxus::prelude::*;
 use crate::api::article::{fetch_articles, fetch_user_feed_articles, favorite_article, unfavorite_article, ArticleQuery};
@@ -193,6 +193,8 @@ pub fn ArticleListWithPagination(props: ArticleListWithPaginationProps) -> Eleme
 
     let feed_type = props.feed_type.clone();
     let token_clone = token.clone();
+
+
 
     let articles = use_resource(move || {
         let tag = props.tag.clone();
@@ -233,6 +235,10 @@ pub fn ArticleListWithPagination(props: ArticleListWithPaginationProps) -> Eleme
             }
         }
     });
+
+
+
+
 
     // 当资源加载完成时，更新本地状态和总数
     use_effect(move || {
@@ -411,7 +417,6 @@ pub fn ArticlePreview(props: ArticlePreviewProps) -> Element {
         }
     }
 }
-
 
 
 

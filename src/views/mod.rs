@@ -29,3 +29,6 @@ pub use global_feed::GlobalFeed;
 
 mod your_feed;   // <-- New module
 pub use your_feed::YourFeed;
+
+mod tag_feed;
+pub use tag_feed::TagFeed; // 添加这行

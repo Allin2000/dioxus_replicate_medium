@@ -10,7 +10,7 @@ use crate::views::YourFeed;
 
 
 
-use views::{Home,Login,Register,Profile,Settings,Create,Article,Edit};
+use views::{Home,Login,Register,Profile,Settings,Create,Article,Edit,TagFeed};
 
 mod components;
 mod views;
@@ -41,6 +41,10 @@ enum Route {
 
         #[route("/feed")]
         YourFeed {},
+
+        #[route("/tag/:tag")] 
+        TagFeed { tag: String }, // 添加标签路由
+
         #[end_layout]
 
         #[route("/login")]
@@ -63,7 +67,7 @@ enum Route {
         // Article {},
         #[route("/article/:slug")]
         Article { slug: String },
-
+    // #[end_layout]
 }
 
 

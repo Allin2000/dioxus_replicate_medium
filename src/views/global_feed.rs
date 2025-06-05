@@ -8,12 +8,12 @@ pub fn GlobalFeed() -> Element {
     rsx! {
         // div { class: "home-global",
             // Pass the type prop to ArticleList
-            // ArticleList {
-            //     feed_type: "global".to_string(), // Or "all" as in Vue example
-            // }
-            ArticleListWithPagination {
+            ArticleList {
                 feed_type: "global".to_string(), // Or "all" as in Vue example
             }
+            // ArticleListWithPagination {
+            //     feed_type: "global".to_string(), // Or "all" as in Vue example
+            // }
 
         // }
     }
