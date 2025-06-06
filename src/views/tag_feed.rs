@@ -7,12 +7,12 @@ use crate::components::ArticleListWithPagination;
 pub fn TagFeed(tag: String) -> Element {
     rsx! {
 
-        ArticleList {
-              feed_type: format!("tag:{}", tag),
-        }
-        // ArticleListWithPagination { 
-        //     feed_type: format!("tag:{}", tag),
-
+        // ArticleList {
+        //       feed_type: format!("tag:{}", tag),
         // }
+        ArticleListWithPagination { 
+            feed_type: format!("tag:{}", tag),
+
+        }
     }
 }
