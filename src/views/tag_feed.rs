@@ -12,7 +12,7 @@ pub fn TagFeed(tag: String) -> Element {
         // }
         ArticleListWithPagination { 
             feed_type: format!("tag:{}", tag),
-
         }
+        
     }
 }

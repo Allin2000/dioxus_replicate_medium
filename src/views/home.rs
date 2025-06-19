@@ -12,7 +12,12 @@
 //     let app_state_signal = use_context::<Signal<AppState>>();
 
 //     // 2. 安全地获取登录状态
-//     let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
+    // // let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
+    // let is_logged_in = match *app_state_signal.read().auth_status.read() {
+    // AuthStatus::LoggedIn => true,
+    // _ => false,
+    // };
+
 
 
 //     let current_route = use_route::<Route>();
@@ -105,7 +110,12 @@
 //     let app_state_signal = use_context::<Signal<AppState>>();
 
 //     // 安全地获取登录状态
-//     let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
+    // // let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
+    // let is_logged_in = match *app_state_signal.read().auth_status.read() {
+    // AuthStatus::LoggedIn => true,
+    // _ => false,
+    // };
+
 
 //     let current_route = use_route::<Route>();
 //     let nav = use_navigator();
@@ -223,7 +233,11 @@ pub fn Home() -> Element {
     let app_state_signal = use_context::<Signal<AppState>>();
 
     // 安全地获取登录状态
-    let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
+    // let is_logged_in = matches!(*app_state_signal.read().auth_status.read(), AuthStatus::LoggedIn);
+    let is_logged_in = match *app_state_signal.read().auth_status.read() {
+    AuthStatus::LoggedIn => true,
+    _ => false,
+    };
 
     let current_route = use_route::<Route>();
     let nav = use_navigator();
