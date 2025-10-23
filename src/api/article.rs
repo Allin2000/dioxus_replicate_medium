@@ -90,18 +90,6 @@ pub struct UpdateArticlePayload {
     pub body: Option<String>,
 }
 
-// #[derive(Deserialize, Debug, Clone)]
-// pub struct ArticlePreview {
-//     pub slug: String,
-//     pub title: String,
-//     pub description: String,
-//     pub tagList: Vec<String>,
-//     pub createdAt: String,
-//     pub updatedAt: String,
-//     pub favorited: bool,
-//     pub favoritesCount: u32,
-//     pub author: Author,
-// }
 
 
 /// 获取文章列表

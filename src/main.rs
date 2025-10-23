@@ -1,3 +1,4 @@
+// src/main.rs
 use dioxus::prelude::*;
 
 use components::Header;
@@ -23,21 +24,12 @@ mod stores;
 enum Route {
 
     #[layout(Wrapper)]
-        // #[route("/")]
-        // Home {},
-        
-        // #[route("/global")]
-        // GlobalFeed {},
 
-        // #[route("/feed")]
-        // YourFeed {},
 
         #[layout(Home)]
         #[route("/")]
         GlobalFeed {},
                 
-        // #[route("/global")]
-        // GlobalFeed {},
 
         #[route("/feed")]
         YourFeed {},
@@ -51,8 +43,7 @@ enum Route {
         Login {},
         #[route("/register")]
         Register {},
-        // #[route("/profile")]
-        // Profile {},
+
         #[route("/profile/:username")] // <--- Updated route definition
         Profile { username: String },
         #[route("/settings")]
@@ -63,11 +54,8 @@ enum Route {
         #[route("/edit/:slug")]
         Edit {slug:String},
 
-        // #[route("/article")]
-        // Article {},
         #[route("/article/:slug")]
         Article { slug: String },
-    // #[end_layout]
 }
 
 
@@ -76,12 +64,9 @@ enum Route {
 fn Wrapper() -> Element{
 
     // let app_state_signal = use_signal(|| AppState::new());
- 
 
     // // // // 2. 将这些 Signal 重新提供给 Wrapper 的子组件（包括 Outlet 渲染的路由组件）
     // use_context_provider(|| app_state_signal);
-
-
 
     rsx! {
         Header {}

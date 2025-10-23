@@ -1,3 +1,4 @@
+// src/components/footer.rs
 use dioxus::prelude::*;
 
 // const HEADER_SVG: Asset = asset!("/assets/header.svg");
